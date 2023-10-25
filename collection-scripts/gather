@@ -25,9 +25,12 @@ gather_noobaa_resources ${BASE_COLLECTION_PATH}
 gather_odf_client ${BASE_COLLECTION_PATH}
 
 namespace=$(oc get deploy --all-namespaces -o go-template --template='{{range .items}}{{if .metadata.labels}}{{printf "%s %v" .metadata.namespace (index .metadata.labels "olm.owner")}} {{printf "\n"}}{{end}}{{end}}' | grep ocs-operator | awk '{print $1}' | uniq)
+clientNamespace=$(oc get storageclients -A --no-headers | awk '{print $1}')
 storageClusterPresent=$(oc get storagecluster -n "${namespace}" -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
 externalStorageClusterPresent=$(oc get storagecluster -n "${namespace}" -o go-template='{{range .items}}{{.spec.externalStorage.enable}}{{"\n"}}{{end}}')
 reconcileStrategy=$(oc get storagecluster -n "${namespace}" -o go-template='{{range .items}}{{.spec.multiCloudGateway.reconcileStrategy}}{{"\n"}}{{end}}')
+clientStatus=$(oc get storageclients -n "${clientNamespace}" -o go-template='{{range .items}}{{.status.phase}}{{"\n"}}{{end}}')
+
 
 if [ "${externalStorageClusterPresent}" = "true" ]; then
     dbglog "Collecting limited ceph logs since external cluster is present"
@@ -36,6 +39,8 @@ elif [ -z "${storageClusterPresent}" ]; then
     dbglog "Skipping ceph collection as Storage Cluster is not present"
 elif [ "${reconcileStrategy}" = "standalone" ]; then
     dbglog "Skipping ceph collection as this is a MCG only cluster"
+elif [ "${clientStatus}" = "connected"]; then 
+    gather_odf_client ${BASE_COLLECTION_PATH}
 else
     dbglog "Collecting entire ceph logs"
     gather_ceph_resources ${BASE_COLLECTION_PATH}

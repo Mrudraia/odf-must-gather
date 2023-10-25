@@ -5,9 +5,9 @@
 BASE_COLLECTION_PATH=${BASE_COLLECTION_PATH:-"$(pwd)"}
 
 
-STORAGE_CLIENT_NAMESPACE=$(oc get storageclient -A --no-headers | awk '{print $1}')
-CLIENT_OPERATOR_NAMESPACE=$(oc get subscription -A --no-headers | awk '{print $1}' | grep ocs-client-operator)
-
+STORAGE_CLIENT_NAMESPACE=$(oc get storageclients -A --no-headers | awk '{print $1}')
+#CLIENT_OPERATOR_NAMESPACE=$(oc get subscription -A --no-headers | awk '{print $1}' | grep ocs-client-operator)
+CLIENT_OPERATOR_NAMESPACE="openshift-storage"
 
 # collection path for OC commands
 mkdir -p "${BASE_COLLECTION_PATH}/odf-client/oc_output/"
