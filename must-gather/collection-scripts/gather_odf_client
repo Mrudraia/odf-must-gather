@@ -5,8 +5,8 @@
 BASE_COLLECTION_PATH=${BASE_COLLECTION_PATH:-"$(pwd)"}
 
 
-STORAGE_CLIENT_NAMESPACE=$(oc get storageclients -A --no-headers | awk '{print $1}')
-CLIENT_OPERATOR_NAMESPACE=$(oc get subscriptions -A --no-headers | grep ocs-client-operator | awk '{print $1}')
+STORAGE_CLIENT_NAMESPACE=$(oc get subscriptions -A --no-headers | grep ocs-client-operator | awk '{print $1}')
+CLIENT_OPERATOR_NAMESPACE=$(oc get subscriptions -A --no-headers | grep ocs-operator | awk '{print $1}')
 
 # collection path for OC commands
 mkdir -p "${BASE_COLLECTION_PATH}/odf-client/oc_output/"
